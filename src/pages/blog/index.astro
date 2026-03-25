@@ -1,0 +1,23 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog")).sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<Layout>
+    <div class="space-y-4 my-6">
+        <h1 class="text-4xl tracking-tight">Blog</h1>
+        <ul>
+            {
+                posts.map((post) => (
+                    <li>
+                        <a href={`/blog/${post.id}`}>{post.data.title}</a>
+                    </li>
+                ))
+            }
+        </ul>
+    </div>
+</Layout>
