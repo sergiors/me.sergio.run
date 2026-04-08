@@ -8,7 +8,11 @@ import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
-  prefetch: true,
+  prefetch: {
+    defaultStrategy: "viewport",
+    prefetchAll: true,
+  },
+
   integrations: [react(), mdx()],
 
   vite: {
