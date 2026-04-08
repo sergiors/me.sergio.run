@@ -1,6 +1,7 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import Layout from "@/layouts/layout.astro";
 import { getCollection } from "astro:content";
+import { format } from "date-fns";
 
 const posts = (await getCollection("blog")).sort(
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -8,13 +9,23 @@ const posts = (await getCollection("blog")).sort(
 ---
 
 <Layout>
-    <div class="space-y-4 my-6">
+    <title slot="title">Blog</title>
+
+    <div class="space-y-4">
         <h1 class="text-4xl tracking-tight">Blog</h1>
         <ul>
             {
                 posts.map((post) => (
                     <li>
-                        <a href={`/blog/${post.id}`}>{post.data.title}</a>
+                        <a href={`/blog/${post.id}`} class="flex gap-8">
+                            <time
+                                datetime={post.data.pubDate.toISOString()}
+                                class="opacity-50"
+                            >
+                                {format(post.data.pubDate, "MMM dd")}
+                            </time>
+                            <div class="font-bold">{post.data.title}</div>
+                        </a>
                     </li>
                 ))
             }

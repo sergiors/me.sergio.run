@@ -1,31 +1,32 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import Layout from "@/layouts/layout.astro";
 import { Picture } from "astro:assets";
 import myself from "../assets/sergio.jpg";
 ---
 
 <Layout>
-    <div
-        class="flex my-6 gap-4 justify-between [&_a]:underline [&_a]:hover:no-underline"
-    >
-        <div class="space-y-2">
-            <h1 class="text-2xl font-bold">Hey, I'm Sérgio</h1>
-            <p>
-                I'm a Full Stack Engineer based in Curitiba. I
-                <a href="//github.com/sergiors">code</a>, <a href="/blog"
-                    >write</a
-                > and run <a href="//eduseg.com.br">eduseg.com.br</a>.
-            </p>
-        </div>
-
-        <div
-            class="max-lg:hidden size-44 overflow-hidden rounded-full shrink-0 bg-muted"
-        >
-            <Picture
-                src={myself}
-                formats={["avif", "webp"]}
-                alt="Sérgio Rafael Siqueira"
-            />
-        </div>
+  <title slot="title">Sérgio</title>
+  <div
+    class="flex my-6 gap-4 justify-between [&_a]:underline [&_a]:hover:no-underline"
+  >
+    <div class="space-y-2">
+      <h1 class="text-2xl font-bold">Hey, I'm Sérgio</h1>
+      <p>
+        I'm a Full Stack Engineer based in Curitiba. I
+        <a href="//github.com/sergiors">code</a>, <a href="/blog"
+          >write</a
+        > and run <a href="//eduseg.com.br">eduseg.com.br</a>.
+      </p>
     </div>
+
+    <div
+      class="max-lg:hidden size-44 overflow-hidden rounded-full shrink-0 bg-muted"
+    >
+      <Picture
+        src={myself}
+        formats={["avif", "webp"]}
+        alt="Sérgio Rafael Siqueira"
+      />
+    </div>
+  </div>
 </Layout>

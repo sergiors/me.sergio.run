@@ -1,0 +1,17 @@
+---
+import Layout from "@/layouts/layout.astro";
+import { Empty, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
+import { Construction } from "lucide-react";
+---
+
+<Layout>
+  <title slot="title">Resume</title>
+
+  <Empty>
+    <Construction className="size-12 mb-4 text-muted-foreground" />
+    <EmptyTitle>Working on it</EmptyTitle>
+    <EmptyDescription>
+      My resume is currently being polished. Check back soon.
+    </EmptyDescription>
+  </Empty>
+</Layout>

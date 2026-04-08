@@ -1,5 +1,17 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import Layout from "@/layouts/layout.astro";
+import { Empty, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
+import { Construction } from "lucide-react";
 ---
 
-<Layout />
+<Layout>
+  <title slot="title">Homelab</title>
+
+  <Empty>
+    <Construction className="size-12 mb-4 text-muted-foreground" />
+    <EmptyTitle>Under construction</EmptyTitle>
+    <EmptyDescription>
+      My homelab setup is still being configured. Stay tuned.
+    </EmptyDescription>
+  </Empty>
+</Layout>

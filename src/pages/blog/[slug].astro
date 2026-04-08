@@ -1,5 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import Layout from "@/layouts/layout.astro";
 
 import { getCollection, render } from "astro:content";
 
@@ -17,7 +17,9 @@ const { Content } = await render(post);
 ---
 
 <Layout>
-  <article class="space-y-6 my-6">
+  <title slot="title">{post.data.title}</title>
+
+  <article class="space-y-6 max-w-xl mx-auto">
     <header>
       <h1 class="mb-2 text-4xl font-extrabold tracking-tight">
         {post.data.title}
