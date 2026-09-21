@@ -1,0 +1,21 @@
+---
+type Props = {
+  /** Anchor id, also used to label the section for assistive technology. */
+  id: string;
+  /** Visible section heading. */
+  label: string;
+};
+
+const { id, label } = Astro.props;
+---
+
+<section aria-labelledby={id} class="space-y-4">
+  <h2
+    id={id}
+    class="border-b border-border/60 pb-2 text-lg font-semibold tracking-tight"
+  >
+    <span class="prompt-mark" aria-hidden="true">$</span>
+    {label}
+  </h2>
+  <slot />
+</section>

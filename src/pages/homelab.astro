@@ -1,16 +1,367 @@
 ---
-import { Empty, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
-import { Construction } from "lucide-react";
+import InProgressNote from "@/components/InProgressNote.astro";
 import Layout from "@/layouts/layout.astro";
+import {
+    Cloud,
+    Container,
+    Database,
+    Download,
+    Film,
+    HardDrive,
+    Images,
+    Layers,
+    Server,
+    Wallet,
+    Zap,
+    type LucideIcon,
+} from "lucide-react";
+
+type Service = {
+    /** Software name. */
+    name: string;
+    /** What the service is used for. */
+    purpose: string;
+    /** Short category chip shown under the purpose. */
+    category: string;
+    icon: LucideIcon;
+};
+
+type ServiceGroup = {
+    /** Anchor id for the group heading. */
+    id: string;
+    /** Group label rendered as a sub-heading. */
+    label: string;
+    /** One-line explanation of what the group covers. */
+    description: string;
+    items: Service[];
+};
+
+const serviceGroups: ServiceGroup[] = [
+    {
+        id: "platform",
+        label: "platform",
+        description:
+            "The machine and the layers everything else runs on top of.",
+        items: [
+            {
+                name: "Proxmox",
+                purpose:
+                    "Hypervisor that hosts the virtual machines and containers behind the lab.",
+                category: "virtualisation",
+                icon: Layers,
+            },
+            {
+                name: "Docker",
+                purpose:
+                    "Container runtime for the services that ship as containers.",
+                category: "containers",
+                icon: Container,
+            },
+        ],
+    },
+    {
+        id: "media",
+        label: "media & photos",
+        description: "Personal libraries that live on the lab.",
+        items: [
+            {
+                name: "Immich",
+                purpose:
+                    "Self-hosted photo and video backup, with browsing from any device.",
+                category: "photos",
+                icon: Images,
+            },
+            {
+                name: "Jellyfin",
+                purpose: "Media server for streaming my film and TV library.",
+                category: "streaming",
+                icon: Film,
+            },
+            {
+                name: "*arr stack",
+                purpose:
+                    "Media management and download automation around the library.",
+                category: "automation",
+                icon: Download,
+            },
+        ],
+    },
+    {
+        id: "apps",
+        label: "apps",
+        description: "The day-to-day tools I actually use.",
+        items: [
+            {
+                name: "I Hate Money",
+                purpose: "Shared expense tracking for households and groups.",
+                category: "expenses",
+                icon: Wallet,
+            },
+        ],
+    },
+    {
+        id: "data",
+        label: "data & state",
+        description: "Where the services keep their data and working state.",
+        items: [
+            {
+                name: "PostgreSQL",
+                purpose: "Relational database for the services that need one.",
+                category: "relational",
+                icon: Database,
+            },
+            {
+                name: "Redis",
+                purpose: "In-memory store for caching and short-lived state.",
+                category: "cache",
+                icon: Zap,
+            },
+            {
+                name: "SQLite3",
+                purpose:
+                    "Embedded file-based database for lightweight single-node services.",
+                category: "embedded",
+                icon: HardDrive,
+            },
+        ],
+    },
+    {
+        id: "networking",
+        label: "networking",
+        description: "How selected services are reached from outside the lab.",
+        items: [
+            {
+                name: "Cloudflare Tunnels",
+                purpose:
+                    "Publishes selected services over the internet without opening inbound ports.",
+                category: "access",
+                icon: Cloud,
+            },
+        ],
+    },
+];
+
+const environment = [
+    { term: "host", value: "Dell OptiPlex 3000" },
+    { term: "cpu", value: "12th Gen Intel Core i5-12500" },
+    { term: "memory", value: "32 GB" },
+    { term: "hypervisor", value: "Proxmox" },
+    { term: "runtime", value: "Docker" },
+    { term: "platform", value: "Linux" },
+    { term: "focus", value: "learning · operations · documentation" },
+];
+
+const principles = [
+    {
+        title: "hardware at home",
+        body: "The lab runs on a Dell OptiPlex 3000 rather than rented infrastructure, so I own the machine and maintain the whole stack myself.",
+    },
+    {
+        title: "containers first",
+        body: "Every service runs as a Docker container, so the host stays simple and each service can be rebuilt or replaced on its own.",
+    },
+    {
+        title: "one job per container",
+        body: "Each service does one thing: Immich keeps the photos, Jellyfin streams media, PostgreSQL stores structured data, Redis caches it and SQLite3 backs the lightweight services.",
+    },
+    {
+        title: "expose only what is needed",
+        body: "Cloudflare Tunnels publish selected services to the internet. Everything else stays on the local network, reachable only from home.",
+    },
+    {
+        title: "learn by operating",
+        body: "The homelab is where I practice running services end to end — wiring them together, keeping them updated and troubleshooting when something breaks.",
+    },
+    {
+        title: "document as I go",
+        body: "I write the setup down while I build it, so the configuration and the reasoning behind it do not get lost.",
+    },
+];
 ---
 
-<Layout>
-  <title slot="title">Homelab - Sérgio</title>
-  <Empty>
-    <Construction className="size-12 mb-4 text-muted-foreground" />
-    <EmptyTitle>Under construction</EmptyTitle>
-    <EmptyDescription>
-      My homelab setup is still being configured. Stay tuned.
-    </EmptyDescription>
-  </Empty>
+<Layout
+    title="Homelab — Sérgio"
+    description="Sérgio's homelab: self-hosted services running with Docker on Proxmox, documented as the setup grows."
+>
+    <div class="space-y-10">
+        <header class="space-y-5">
+            <p class="prompt">
+                <span class="prompt-mark" aria-hidden="true">
+                    $
+                </span>
+                cat ~/homelab
+            </p>
+
+            <div class="space-y-2">
+                <h1 class="text-4xl font-semibold tracking-tight">Homelab</h1>
+                <p class="font-mono text-sm text-muted-foreground">
+                    self-hosted · proxmox · docker
+                </p>
+            </div>
+
+            <p class="measure text-base/relaxed text-muted-foreground">
+                A self-hosted setup I run at home on a Dell OptiPlex 3000.
+                Proxmox hosts the virtual machines and containers, Docker runs
+                the services, and Cloudflare Tunnels expose the few that I need
+                to reach from outside the network. I use it to learn — wiring
+                services together, keeping them running and writing down what I
+                figure out along the way.
+            </p>
+        </header>
+
+        <section aria-labelledby="environment" class="space-y-6">
+            <h2
+                id="environment"
+                class="border-b border-border/60 pb-2 text-lg font-semibold tracking-tight"
+            >
+                <span class="prompt-mark" aria-hidden="true">
+                    $
+                </span>
+                environment
+            </h2>
+
+            <div class="overflow-hidden rounded-xl border border-border/70 bg-card/50 shadow-sm">
+                <div class="flex items-center gap-2 border-b border-border/70 bg-muted/40 px-4 py-2.5">
+                    <span
+                        class="size-2.5 rounded-full bg-destructive/70"
+                        aria-hidden="true"
+                    ></span>
+                    <span
+                        class="size-2.5 rounded-full bg-primary/70"
+                        aria-hidden="true"
+                    ></span>
+                    <span
+                        class="size-2.5 rounded-full bg-muted-foreground/40"
+                        aria-hidden="true"
+                    ></span>
+                    <span class="ml-2 font-mono text-xs text-muted-foreground">
+                        ~/homelab
+                    </span>
+                </div>
+
+                <dl class="divide-y divide-border/50 font-mono text-sm">
+                    {environment.map((row) => (
+                        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 px-4 py-2.5">
+                            <dt class="shrink-0 text-xs text-muted-foreground">
+                                <span class="text-primary" aria-hidden="true">
+                                    $
+                                </span>{" "}
+                                {row.term}
+                            </dt>
+                            <dd class="min-w-0 text-foreground">{row.value}</dd>
+                        </div>
+                    ))}
+                </dl>
+            </div>
+        </section>
+
+        <section aria-labelledby="services" class="space-y-6">
+            <h2
+                id="services"
+                class="border-b border-border/60 pb-2 text-lg font-semibold tracking-tight"
+            >
+                <span class="prompt-mark" aria-hidden="true">
+                    $
+                </span>
+                services
+            </h2>
+
+            {serviceGroups.map((group) => (
+                <div id={group.id} class="space-y-3">
+                    <div class="space-y-1">
+                        <h3 class="font-mono text-sm font-semibold tracking-tight text-foreground">
+                            <span class="text-primary" aria-hidden="true">
+                                #
+                            </span>{" "}
+                            {group.label}
+                        </h3>
+                        <p class="measure text-sm/relaxed text-muted-foreground">
+                            {group.description}
+                        </p>
+                    </div>
+
+                    <ul class="grid gap-3 sm:grid-cols-2">
+                        {group.items.map((service) => {
+                            const Icon = service.icon;
+                            return (
+                                <li>
+                                    <article class="flex h-full flex-col gap-3 rounded-xl border border-border/70 bg-card/50 p-4 shadow-sm">
+                                        <header class="flex items-center gap-3">
+                                            <span
+                                                class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground"
+                                                aria-hidden="true"
+                                            >
+                                                <Icon className="size-5" />
+                                            </span>
+                                            <h4 class="font-semibold tracking-tight">
+                                                {service.name}
+                                            </h4>
+                                        </header>
+
+                                        <p class="text-sm/relaxed text-muted-foreground">
+                                            {service.purpose}
+                                        </p>
+
+                                        <p class="mt-auto">
+                                            <span class="rounded-md bg-muted px-2 py-0.5 font-mono text-xs text-muted-foreground">
+                                                {service.category}
+                                            </span>
+                                        </p>
+                                    </article>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+            ))}
+
+            <p class="flex items-start gap-2 font-mono text-xs text-muted-foreground">
+                <Server
+                    className="mt-0.5 size-3.5 shrink-0"
+                    aria-hidden="true"
+                />
+                Everything runs as Docker containers on Proxmox, with selected
+                services exposed through Cloudflare Tunnels.
+            </p>
+        </section>
+
+        <section aria-labelledby="operations" class="space-y-4">
+            <h2
+                id="operations"
+                class="border-b border-border/60 pb-2 text-lg font-semibold tracking-tight"
+            >
+                <span class="prompt-mark" aria-hidden="true">
+                    $
+                </span>
+                operations
+            </h2>
+
+            <ol class="space-y-3">
+                {principles.map((principle, index) => (
+                    <li class="flex gap-4 rounded-xl border border-border/70 bg-card/50 p-4 shadow-sm">
+                        <span
+                            class="font-mono text-xs text-muted-foreground"
+                            aria-hidden="true"
+                        >
+                            {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <div class="space-y-1">
+                            <h3 class="font-mono text-sm font-semibold tracking-tight">
+                                {principle.title}
+                            </h3>
+                            <p class="measure text-sm/relaxed text-muted-foreground">
+                                {principle.body}
+                            </p>
+                        </div>
+                    </li>
+                ))}
+            </ol>
+        </section>
+
+        <InProgressNote
+            path="~/homelab/draft"
+            label="documentation in progress"
+            message="The full homelab documentation is still being written — more detail on the hardware, the services and the day-to-day operations is coming."
+        />
+    </div>
 </Layout>

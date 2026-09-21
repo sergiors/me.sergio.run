@@ -1,0 +1,62 @@
+---
+type Props = {
+    /** Short monospace label shown as the note heading. */
+    label?: string;
+    /** Explanatory copy rendered under the heading. */
+    message?: string;
+    /** Monospace path shown in the title bar. */
+    path?: string;
+};
+
+const {
+    label = "writing in progress",
+    message = "The rest of this post is still being written. More sections are coming.",
+    path = "~/blog/draft",
+} = Astro.props;
+
+// Derive a stable id so the landmark can be labelled by its visible heading.
+const headingId = `note-${label
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")}`;
+---
+
+<aside
+    aria-labelledby={headingId}
+    class="not-prose my-8 overflow-hidden rounded-xl border border-border/70 bg-card/50 shadow-sm"
+>
+    <div
+        class="flex items-center gap-2 border-b border-border/70 bg-muted/40 px-4 py-2.5"
+    >
+        <span
+            class="size-2.5 rounded-full bg-destructive/70"
+            aria-hidden="true"
+        ></span>
+        <span class="size-2.5 rounded-full bg-primary/70" aria-hidden="true"
+        ></span>
+        <span
+            class="size-2.5 rounded-full bg-muted-foreground/40"
+            aria-hidden="true"
+        ></span>
+        <span class="ml-2 font-mono text-xs text-muted-foreground">
+            {path}
+        </span>
+    </div>
+
+    <div class="space-y-2 px-4 py-4">
+        <h2
+            id={headingId}
+            class="font-mono text-sm font-semibold tracking-tight text-foreground"
+        >
+            <span class="prompt-mark" aria-hidden="true">$</span>
+            {label}
+            <span class="animate-blink text-primary" aria-hidden="true">
+                ▋
+            </span>
+        </h2>
+
+        <p class="font-mono text-sm/relaxed text-foreground/80">
+            {message}
+        </p>
+    </div>
+</aside>

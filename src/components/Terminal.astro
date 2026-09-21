@@ -1,0 +1,75 @@
+---
+import { SITE } from "@/consts";
+
+type Line = {
+    prompt: string;
+    value: string;
+};
+
+const lines: Line[] = [
+    { prompt: "whoami", value: SITE.fullName },
+    { prompt: "role", value: "Full Stack Engineer · Co-founder & CTO" },
+    { prompt: "location", value: "Palermo, Italy" },
+    { prompt: "stack", value: "Python · TypeScript · React · AWS" },
+    { prompt: "focus", value: "event-driven systems" },
+];
+---
+
+<section class="my-8 space-y-6">
+    <p class="prompt">
+        <span class="prompt-mark" aria-hidden="true">
+            $
+        </span>
+        hello, friend
+        <span class="animate-blink text-primary" aria-hidden="true">
+            ▋
+        </span>
+    </p>
+
+    <h1 class="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
+        I build systems that just keep running.
+    </h1>
+
+    <p class="measure text-base/relaxed text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:decoration-border [&_a:hover]:decoration-foreground">
+        I'm {SITE.name}, a Full Stack Engineer and co-founder &amp; CTO at
+        <a href="//eduseg.com.br">EDUSEG</a>, where I design serverless,
+        event-driven platforms on AWS — from Python backends and distributed
+        pipelines to the React and Astro frontends on top. I
+        <a href="//github.com/sergiors">open-source</a> the tools I wish
+        existed and <a href="/blog">write</a> about what I learn building them.
+    </p>
+
+    <div class="overflow-hidden rounded-xl border border-border/70 bg-card/50 shadow-sm">
+        <div class="flex items-center gap-2 border-b border-border/70 bg-muted/40 px-4 py-2.5">
+            <span
+                class="size-2.5 rounded-full bg-destructive/70"
+                aria-hidden="true"
+            ></span>
+            <span
+                class="size-2.5 rounded-full bg-primary/70"
+                aria-hidden="true"
+            ></span>
+            <span
+                class="size-2.5 rounded-full bg-muted-foreground/40"
+                aria-hidden="true"
+            ></span>
+            <span class="ml-2 font-mono text-xs text-muted-foreground">
+                ~/sergio
+            </span>
+        </div>
+
+        <dl class="divide-y divide-border/50 font-mono text-sm">
+            {lines.map((line) => (
+                <div class="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 px-4 py-2.5">
+                    <dt class="shrink-0 text-xs text-muted-foreground">
+                        <span class="text-primary" aria-hidden="true">
+                            $
+                        </span>{" "}
+                        {line.prompt}
+                    </dt>
+                    <dd class="min-w-0 text-foreground">{line.value}</dd>
+                </div>
+            ))}
+        </dl>
+    </div>
+</section>

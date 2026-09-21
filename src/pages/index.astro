@@ -1,31 +1,83 @@
 ---
-import { Picture } from "astro:assets";
+import Terminal from "@/components/Terminal.astro";
+import { buttonVariants } from "@/components/ui/button";
 import Layout from "@/layouts/layout.astro";
-import myself from "@/assets/sergio.jpg";
+import { cn } from "@/lib/utils";
+import { ArrowRight, Rss } from "lucide-react";
+
+const sections = [
+  {
+    href: "/blog",
+    label: "blog",
+    description:
+      "Field notes on event-driven design, serverless trade-offs and the tools I build along the way.",
+    featured: true,
+  },
+  {
+    href: "/resume",
+    label: "resume",
+    description:
+      "The full record — roles, stack and the systems behind them, plus how to reach me.",
+  },
+  {
+    href: "/homelab",
+    label: "homelab",
+    description:
+      "Self-hosted services and Docker tinkering, documented as the setup grows.",
+  },
+];
 ---
 
-<Layout>
-  <title slot="title">Sérgio</title>
-  <div
-    class="flex my-6 gap-4 justify-between [&_a]:underline [&_a]:hover:no-underline"
-  >
-    <div class="space-y-2">
-      <h1 class="text-2xl font-bold">Hey, I'm Sérgio</h1>
-      <p>
-        I'm a Full Stack Engineer based in Curitiba. I
-        <a href="//github.com/sergiors">code</a>, <a href="/blog">write</a> and run
-        <a href="//eduseg.com.br">eduseg.com.br</a>.
-      </p>
-    </div>
+<Layout title="Sérgio — Full Stack Engineer">
+  <Terminal />
 
-    <div
-      class="max-lg:hidden size-44 overflow-hidden rounded-full shrink-0 bg-muted"
+  <section aria-labelledby="explore-heading" class="mt-4">
+    <h2 id="explore-heading" class="prompt mb-4">
+      <span class="prompt-mark" aria-hidden="true">$</span>ls
+    </h2>
+
+    <ul class="grid gap-3 sm:grid-cols-2">
+      {
+        sections.map((section) => (
+          <li>
+            <a
+              href={section.href}
+              class={cn(
+                buttonVariants({ variant: "outline" }),
+                "group/button h-full w-full flex-col items-start gap-2 rounded-xl px-4 py-4 text-left whitespace-normal",
+                section.featured && "sm:col-span-2",
+              )}
+            >
+              <span class="inline-flex items-center gap-2 font-mono text-sm font-medium">
+                <span class="text-primary" aria-hidden="true">
+                  ./
+                </span>
+                {section.label}
+                <ArrowRight
+                  aria-hidden="true"
+                  className="size-3.5 -translate-x-1 opacity-0 transition-all group-hover/button:translate-x-0 group-hover/button:opacity-100"
+                />
+              </span>
+              <span class="text-sm font-normal text-muted-foreground">
+                {section.description}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <p class="mt-8">
+    <a
+      href="/blog"
+      class={cn(
+        buttonVariants({ variant: "ghost", size: "sm" }),
+        "font-mono",
+      )}
     >
-      <Picture
-        src={myself}
-        formats={["avif", "webp"]}
-        alt="Sérgio Rafael Siqueira"
-      />
-    </div>
-  </div>
+      <Rss aria-hidden="true" />
+      read the blog
+    </a>
+  </p>
 </Layout>

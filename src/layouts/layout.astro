@@ -1,76 +1,75 @@
 ---
-import { ModeToggle } from "@/components/mode-toggle";
-import { Picture } from "astro:assets";
-import myself from "../assets/sergio.jpg";
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import { SITE } from "@/consts";
 import "../styles/global.css";
+
+type Props = {
+  /** Page title used for metadata and Open Graph tags. */
+  title?: string;
+  /** Meta description; falls back to the site-wide default. */
+  description?: string;
+};
+
+const { title = SITE.title, description = SITE.description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, SITE.url);
 ---
 
 <script is:inline>
-    const getThemePreference = () => {
-        if (
-            typeof localStorage !== "undefined" &&
-            localStorage.getItem("theme")
-        ) {
-            return localStorage.getItem("theme");
-        }
-        return window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
-    };
-    const isDark = getThemePreference() === "dark";
-    document.documentElement.classList[isDark ? "add" : "remove"]("dark");
-
-    if (typeof localStorage !== "undefined") {
-        const observer = new MutationObserver(() => {
-            const isDark = document.documentElement.classList.contains("dark");
-            localStorage.setItem("theme", isDark ? "dark" : "light");
-        });
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ["class"],
-        });
+  const getThemePreference = () => {
+    if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+      return localStorage.getItem("theme");
     }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  };
+  const isDark = getThemePreference() === "dark";
+  document.documentElement.classList[isDark ? "add" : "remove"]("dark");
+
+  if (typeof localStorage !== "undefined") {
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
 </script>
 
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <meta name="generator" content={Astro.generator} />
-        <slot name="title" />
-        <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
-        <link href="https://cdn.fontshare.com/wcss" rel="stylesheet" />
-    </head>
-    <body class="space-y-8">
-        <header>
-            <nav class="mx-auto lg:max-w-3xl flex gap-4 items-center py-2 px-4">
-                <div class="size-8 overflow-hidden rounded-full bg-muted">
-                    <a href="/">
-                        <Picture
-                            src={myself}
-                            formats={["avif", "webp"]}
-                            alt="Sérgio Rafael Siqueira"
-                        />
-                    </a>
-                </div>
-                <div class="ml-auto flex gap-4 items-center">
-                    <ul class="flex gap-4">
-                        <li><a href="/resume">Resume</a></li>
-                        <li><a href="/blog">Blog</a></li>
-                        <li><a href="/homelab">Homelab</a></li>
-                    </ul>
-                    <ModeToggle client:load />
-                </div>
-            </nav>
-        </header>
+<html lang={SITE.locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <link rel="canonical" href={canonical.href} />
+    <meta name="description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta name="twitter:card" content="summary" />
+  </head>
 
-        <div class="mx-auto lg:max-w-3xl px-4">
-            <main><slot /></main>
-        </div>
+  <body class="grid-backdrop flex min-h-dvh flex-col">
+    <a
+      href="#main"
+      class="sr-only rounded-md bg-background px-4 py-2 font-mono text-sm focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50"
+    >
+      Skip to content
+    </a>
 
-        <footer class="opacity-50 mx-auto lg:max-w-3xl px-4">
-            Sérgio &copy; {new Date().getFullYear()}
-        </footer>
-    </body>
+    <Header />
+
+    <main id="main" class="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
 </html>

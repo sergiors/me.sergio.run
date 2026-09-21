@@ -1,0 +1,30 @@
+---
+title: "Building Event-Driven Systems Without the Cloud Lock-In"
+slug: building-event-driven-systems-without-the-cloud-lock-in
+pubDate: 2026-09-21T19:41:46.095963
+description: "Why I like the event-driven model, what the AWS cost and lock-in trade-offs look like, and the question that started this series."
+---
+
+import InProgressNote from "@/components/InProgressNote.astro";
+
+I've been working with AWS infrastructure for quite some time, especially with DynamoDB, EventBridge, and Lambda to build event-driven systems.
+
+I've always liked how practical this approach is. You can connect services through events, keep components decoupled, and go from an idea to something scalable with very little infrastructure to manage.
+
+But over time, a few things started to bother me.
+
+DynamoDB Streams are consumed through polling, and as the architecture grows, you also start thinking about stream reads, EventBridge requests, Lambda invocations, and the cost model behind all those moving parts.
+
+And then there's the bigger issue: vendor lock-in.
+
+I really like this way of building systems, both professionally and for personal projects. But using the same approach usually means committing the application to AWS.
+
+For personal projects in particular, I wanted the same kind of speed and simplicity I get from the AWS stack — without having to maintain build files, deployment boilerplate, or a bunch of infrastructure just to run a small event-driven service.
+
+And professionally, having that same programming model without being tied to a specific cloud provider is also very appealing.
+
+That made me start wondering:
+
+What if I could keep the event-driven programming model I like, without being tied to the platform behind it?
+
+<InProgressNote />

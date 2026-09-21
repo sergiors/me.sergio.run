@@ -13,6 +13,11 @@ export default defineConfig({
     prefetchAll: true,
   },
 
+  // Astro 7 changed the default to "jsx", which strips the whitespace around
+  // inline elements. Keep the pre-v7 HTML-aware behavior so existing copy and
+  // links keep their spacing.
+  compressHTML: true,
+
   integrations: [react(), mdx()],
 
   vite: {

@@ -1,16 +1,251 @@
 ---
-import { Construction } from "lucide-react";
-import { Empty, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
+import ResumeSection from "@/components/ResumeSection.astro";
+import { buttonVariants } from "@/components/ui/button";
+import { SITE } from "@/consts";
+import {
+    contacts,
+    experience,
+    languages,
+    projects,
+    stack,
+    type ProjectLanguage,
+} from "@/data/resume";
 import Layout from "@/layouts/layout.astro";
+import { cn } from "@/lib/utils";
+import { ArrowUpRight } from "lucide-react";
+
+/** Bullet colour for each supported project language. */
+const languageDot: Record<ProjectLanguage, string> = {
+    Go: "bg-cyan-600",
+    Python: "bg-sky-800",
+};
 ---
 
-<Layout>
-  <title slot="title">Resume - Sérgio</title>
-  <Empty>
-    <Construction className="size-12 mb-4 text-muted-foreground" />
-    <EmptyTitle>Working on it</EmptyTitle>
-    <EmptyDescription>
-      My resume is currently being polished. Check back soon.
-    </EmptyDescription>
-  </Empty>
+<style>
+    /* Keep the resume readable on paper: hide the site chrome, drop the
+       decorative grid backdrop and tighten the top padding. */
+    @media print {
+        :global(body)::before {
+            display: none;
+        }
+
+        :global(main) {
+            padding-top: 0;
+        }
+
+        :global(header.sticky),
+        :global(footer) {
+            display: none;
+        }
+    }
+</style>
+
+<Layout
+    title="Resume — Sérgio"
+    description="Sérgio Rafael Siqueira's resume — co-founder & CTO at EDUSEG, building serverless, event-driven systems on AWS with Python, React and Astro."
+>
+    <div class="space-y-10">
+        <header class="space-y-5">
+            <p class="prompt">
+                <span class="prompt-mark" aria-hidden="true">
+                    $
+                </span>
+                cat ~/resume
+            </p>
+
+            <div class="space-y-2">
+                <h1 class="text-4xl font-semibold tracking-tight">Resume</h1>
+                <p class="font-mono text-sm text-muted-foreground">
+                    {SITE.fullName} · Co-founder &amp; CTO at EDUSEG
+                </p>
+            </div>
+
+            <ul class="flex flex-wrap gap-2">
+                {contacts.map(({ label, href, external }) => (
+                    <li>
+                        <a
+                            href={href}
+                            target={external ? "_blank" : undefined}
+                            rel={external ? "noreferrer" : undefined}
+                            class={cn(
+                                buttonVariants({
+                                    variant: "outline",
+                                    size: "sm",
+                                }),
+                                "font-mono text-xs text-muted-foreground hover:text-foreground",
+                            )}
+                        >
+                            {label}
+                        </a>
+                    </li>
+                ))}
+            </ul>
+        </header>
+
+        <ResumeSection id="profile" label="profile">
+            <p class="measure text-base/relaxed text-muted-foreground">
+                Full Stack Engineer and co-founder &amp; CTO at EDUSEG. I design
+                and build scalable, event-driven platforms: serverless AWS
+                backends in Python, search and indexing pipelines, and modern
+                React and Astro frontends with edge rendering on Cloudflare
+                Workers. I also run the infrastructure and operations that keep
+                those systems online.
+            </p>
+        </ResumeSection>
+
+        <ResumeSection id="stack" label="core stack">
+            <ul class="grid gap-3 sm:grid-cols-2">
+                {stack.map((group) => (
+                    <li class="break-inside-avoid rounded-xl border border-border/70 bg-card/50 p-4 shadow-sm">
+                        <h3 class="font-mono text-xs tracking-wider text-muted-foreground uppercase">
+                            {group.category}
+                        </h3>
+                        <ul class="mt-3 flex flex-wrap gap-1.5">
+                            {group.items.map((item) => (
+                                <li class="rounded-md bg-muted px-2 py-0.5 font-mono text-xs text-foreground">
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                    </li>
+                ))}
+            </ul>
+        </ResumeSection>
+
+        <ResumeSection id="experience" label="experience">
+            <ol class="space-y-8">
+                {experience.map((entry) => (
+                    <li class="break-inside-avoid">
+                        <article class="space-y-4">
+                            <header class="space-y-1">
+                                <h3 class="font-semibold tracking-tight">
+                                    {entry.role}
+                                </h3>
+                                <p class="font-mono text-xs text-muted-foreground">
+                                    {entry.companyHref ? (
+                                        <a
+                                            href={entry.companyHref}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            class="underline decoration-border underline-offset-4 transition-colors hover:text-foreground hover:decoration-foreground"
+                                        >
+                                            {entry.company}
+                                        </a>
+                                    ) : (
+                                        entry.company
+                                    )}
+                                    <span aria-hidden="true"> · </span>
+                                    <span>{entry.period}</span>
+                                </p>
+                            </header>
+
+                            {entry.groups ? (
+                                <div class="space-y-5 border-l border-border/60 pl-4">
+                                    {entry.groups.map((group) => (
+                                        <div class="space-y-2">
+                                            <h4 class="text-sm font-medium tracking-tight text-foreground">
+                                                {group.title}
+                                            </h4>
+                                            <ul class="measure list-disc space-y-1.5 pl-5 text-sm/relaxed text-muted-foreground marker:text-primary/70">
+                                                {group.items.map((item) => (
+                                                    <li>{item}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <ul class="measure list-disc space-y-1.5 pl-5 text-sm/relaxed text-muted-foreground marker:text-primary/70">
+                                    {entry.items?.map((item) => (
+                                        <li>{item}</li>
+                                    ))}
+                                </ul>
+                            )}
+                        </article>
+                    </li>
+                ))}
+            </ol>
+        </ResumeSection>
+
+        <ResumeSection id="projects" label="selected projects">
+            <ul class="grid gap-3 sm:grid-cols-2">
+                {projects.map((project) => (
+                    <li>
+                        <article class="flex h-full break-inside-avoid flex-col gap-2 rounded-xl border border-border/70 bg-card/50 p-4 shadow-sm">
+                            <header class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                                <h3 class="font-semibold tracking-tight">
+                                    <a
+                                        href={project.href}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        class="group inline-flex items-center gap-1 underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                                    >
+                                        {project.name}
+                                        <ArrowUpRight
+                                            aria-hidden="true"
+                                            className="size-3.5 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                                        />
+                                    </a>
+                                </h3>
+                                <span class="font-mono text-xs text-muted-foreground">
+                                    {project.period}
+                                </span>
+                            </header>
+                            <div class="space-y-1.5">
+                                <p class="text-sm/relaxed text-muted-foreground">
+                                    {project.description}
+                                </p>
+                                {project.language && (
+                                    <p class="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
+                                        <span
+                                            class={cn(
+                                                "size-2.5 shrink-0 rounded-full",
+                                                languageDot[project.language],
+                                            )}
+                                            aria-hidden="true"
+                                        />
+                                        {project.language}
+                                    </p>
+                                )}
+                            </div>
+                        </article>
+                    </li>
+                ))}
+            </ul>
+        </ResumeSection>
+
+        <ResumeSection id="education" label="education">
+            <div class="space-y-1">
+                <h3 class="font-semibold tracking-tight">
+                    Bachelor's Degree in Information Systems
+                </h3>
+                <p class="text-sm text-muted-foreground">
+                    Instituto Federal Catarinense — Camboriú
+                </p>
+                <p class="font-mono text-xs text-muted-foreground">
+                    Not completed, 2014
+                </p>
+            </div>
+        </ResumeSection>
+
+        <ResumeSection id="community" label="community">
+            <p class="measure text-sm/relaxed text-muted-foreground">
+                Organizer of the PHP community in Santa Catarina (activities
+                concluded).
+            </p>
+        </ResumeSection>
+
+        <ResumeSection id="languages" label="languages">
+            <dl class="divide-y divide-border/50 border-y border-border/60 text-sm">
+                {languages.map((language) => (
+                    <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 px-1 py-2.5">
+                        <dt class="font-medium">{language.name}</dt>
+                        <dd class="font-mono text-xs text-muted-foreground">
+                            {language.level}
+                        </dd>
+                    </div>
+                ))}
+            </dl>
+        </ResumeSection>
+    </div>
 </Layout>

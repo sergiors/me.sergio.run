@@ -1,34 +1,34 @@
 ---
+import PostList from "@/components/PostList.astro";
 import Layout from "@/layouts/layout.astro";
 import { getCollection } from "astro:content";
-import { format } from "date-fns";
 
 const posts = (await getCollection("blog")).sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
 
-<Layout>
-    <title slot="title">Blog</title>
+<Layout title="Blog — Sérgio">
+  <div class="space-y-8">
+    <header class="space-y-3">
+      <p class="prompt">
+        <span class="prompt-mark" aria-hidden="true">$</span>ls ~/blog
+      </p>
+      <h1 class="text-4xl font-semibold tracking-tight">Blog</h1>
+      <p class="measure text-muted-foreground">
+        Notes on software engineering, cloud architecture and modern web
+        development.
+      </p>
+    </header>
 
-    <div class="space-y-4">
-        <h1 class="text-4xl tracking-tight">Blog</h1>
-        <ul>
-            {
-                posts.map((post) => (
-                    <li>
-                        <a href={`/blog/${post.id}`} class="flex gap-8">
-                            <time
-                                datetime={post.data.pubDate.toISOString()}
-                                class="opacity-50"
-                            >
-                                {format(post.data.pubDate, "MMM dd")}
-                            </time>
-                            <div class="font-bold">{post.data.title}</div>
-                        </a>
-                    </li>
-                ))
-            }
-        </ul>
-    </div>
+    {
+      posts.length > 0 ? (
+        <PostList posts={posts} />
+      ) : (
+        <p class="font-mono text-sm text-muted-foreground">
+          No posts yet. Check back soon.
+        </p>
+      )
+    }
+  </div>
 </Layout>

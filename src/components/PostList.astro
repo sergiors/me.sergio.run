@@ -1,0 +1,56 @@
+---
+import { format } from "date-fns";
+
+type Post = {
+  id: string;
+  data: {
+    title: string;
+    pubDate: Date;
+    description?: string;
+  };
+};
+
+type Props = {
+  posts: Post[];
+};
+
+const { posts } = Astro.props;
+---
+
+<ul class="divide-y divide-border/60 border-y border-border/60">
+  {
+    posts.map((post) => (
+      <li>
+        <a
+          href={`/blog/${post.id}`}
+          class="group flex flex-col gap-1 px-1 py-4 transition-colors hover:bg-muted/40 sm:flex-row sm:items-baseline sm:gap-6"
+        >
+          <time
+            datetime={post.data.pubDate.toISOString()}
+            class="shrink-0 font-mono text-xs text-muted-foreground tabular-nums"
+          >
+            {format(post.data.pubDate, "yyyy.MM.dd")}
+          </time>
+
+          <span class="min-w-0 space-y-1">
+            <span class="block font-medium text-foreground underline-offset-4 group-hover:underline">
+              {post.data.title}
+            </span>
+            {post.data.description && (
+              <span class="block max-w-prose text-sm text-muted-foreground">
+                {post.data.description}
+              </span>
+            )}
+          </span>
+
+          <span
+            aria-hidden="true"
+            class="ml-auto hidden shrink-0 font-mono text-xs text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 sm:block"
+          >
+            -&gt;
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
