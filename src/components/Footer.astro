@@ -5,28 +5,28 @@ const host = new URL(SITE.url).host;
 ---
 
 <footer class="mt-16 border-t border-border/60">
-    <div class="mx-auto flex w-full max-w-3xl flex-col gap-4 px-4 py-8">
-        <div class="flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-            <p class="prompt" aria-hidden="true">
-                <span class="text-foreground">sergio@{host}</span>
-                <span>:~</span>
-                <span class="text-primary">$</span>{" "}
-                <span class="text-primary">_</span>
-            </p>
+    <div class="mx-auto w-full max-w-3xl px-4 py-8">
+        <p class="prompt" aria-hidden="true">
+            <span class="text-foreground">sergio@{host}</span>
+            <span>:~</span>
+            <span class="text-primary"> $ </span>ls ~/links
+        </p>
 
-            <ul class="flex items-center gap-4 font-mono">
+        <nav aria-label="Links">
+            <ul class="mt-4 flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
                 {SOCIALS.map((item) => (
                     <li>
                         <a
                             href={item.href}
+                            target="_blank"
                             rel="noreferrer"
-                            class="rounded-sm transition-colors hover:text-foreground hover:underline hover:underline-offset-4"
+                            class="inline-flex items-center rounded-sm text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
                         >
-                            {item.label}
+                            {item.label}/
                         </a>
                     </li>
                 ))}
             </ul>
-        </div>
+        </nav>
     </div>
 </footer>
