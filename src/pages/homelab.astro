@@ -1,4 +1,9 @@
 ---
+import { Image } from "astro:assets";
+
+import optiplex3000Behind from "@/assets/homelab/optiplex-3000-behind.jpg";
+import optiplex3000Front from "@/assets/homelab/optiplex-3000-front.jpg";
+import optiplex3000Side from "@/assets/homelab/optiplex-3000-side.jpg";
 import InProgressNote from "@/components/InProgressNote.astro";
 import Layout from "@/layouts/layout.astro";
 import {
@@ -151,12 +156,12 @@ type EnvironmentRow = {
 };
 
 const environment: EnvironmentRow[] = [
-    { term: "host", value: "Dell OptiPlex 3000" },
+    { term: "host", value: "Dell OptiPlex 3000 Micro" },
     { term: "cpu", value: "12th Gen Intel Core i5-12500" },
     { term: "memory", value: "32 GB" },
     {
         term: "storage",
-        value: "HDD · 6 GB of files",
+        value: "HDD · 6 TB",
         note: "A single disk with no mirroring or parity — not a redundant NAS yet.",
     },
     { term: "hypervisor", value: "Proxmox" },
@@ -166,55 +171,50 @@ const environment: EnvironmentRow[] = [
 ];
 
 type Photo = {
-    /** Public path to the optimised photo. */
-    src: string;
+    /** Imported image metadata; Astro derives the intrinsic size from it. */
+    src: ImageMetadata;
     /** Alternative text describing what the photo shows. */
     alt: string;
     /** Short monospace caption shown under the thumbnail. */
     caption: string;
-    /** Intrinsic width, kept in sync with the file in `public/`. */
-    width: number;
-    /** Intrinsic height, kept in sync with the file in `public/`. */
-    height: number;
 };
 
 /**
  * All three shots share one frame so the strip reads as an even set: a fixed
- * 4:3 crop with `object-cover`. The intrinsic width/height are still passed to
- * the `<img>` so the browser reserves space before the image loads.
+ * 4:3 crop with `object-cover`. Each source is only 720–960px wide, so the
+ * responsive widths cap out at the intrinsic size Astro reads from the import.
  */
 const PHOTO_FRAME_CLASS = "aspect-[4/3]";
+
+// The strip is a third of the row on wider viewports and stays a third on
+// phones, so `sizes` matches the `grid-cols-3` layout the images sit in.
+const PHOTO_SIZES = "(min-width: 640px) 33vw, 33vw";
+const PHOTO_WIDTHS = [320, 640, 960];
 
 // Supporting shots of the host itself, kept small so they read as context
 // next to the environment spec sheet rather than as a photo gallery.
 const photos: Photo[] = [
     {
-        src: "/images/homelab/optiplex-3000-front.jpg",
-        alt: "Front of the Dell OptiPlex 3000 standing beside its dock, showing the power button, two blue USB ports and the ventilation grille.",
+        src: optiplex3000Front,
+        alt: "Front of the Dell OptiPlex 3000 Micro standing beside its dock, showing the power button, two blue USB ports and the ventilation grille.",
         caption: "front — ports & dock",
-        width: 720,
-        height: 960,
     },
     {
-        src: "/images/homelab/optiplex-3000-side.jpg",
-        alt: "Side of the Dell OptiPlex 3000 showing the large cooling fan attached to the vented case.",
+        src: optiplex3000Side,
+        alt: "Side of the Dell OptiPlex 3000 Micro showing the large cooling fan attached to the vented case.",
         caption: "side — fan & vents",
-        width: 960,
-        height: 720,
     },
     {
-        src: "/images/homelab/optiplex-3000-behind.jpg",
-        alt: "Power leads and cables routed behind the Dell OptiPlex 3000 and its dock.",
+        src: optiplex3000Behind,
+        alt: "Power leads and cables routed behind the Dell OptiPlex 3000 Micro and its dock.",
         caption: "behind — cabling",
-        width: 720,
-        height: 960,
     },
 ];
 
 const principles = [
     {
         title: "hardware at home",
-        body: "The lab runs on a Dell OptiPlex 3000 rather than rented infrastructure, so I own the machine and maintain the whole stack myself.",
+        body: "The lab runs on a Dell OptiPlex 3000 Micro rather than rented infrastructure, so I own the machine and maintain the whole stack myself.",
     },
     {
         title: "containers first",
@@ -333,11 +333,13 @@ const principles = [
                     {photos.map((photo) => (
                         <li>
                             <figure class="space-y-1.5">
-                                <img
+                                <Image
                                     src={photo.src}
                                     alt={photo.alt}
-                                    width={photo.width}
-                                    height={photo.height}
+                                    widths={PHOTO_WIDTHS}
+                                    sizes={PHOTO_SIZES}
+                                    format="avif"
+                                    quality={72}
                                     loading="lazy"
                                     decoding="async"
                                     class:list={[
