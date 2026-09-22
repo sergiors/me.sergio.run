@@ -146,6 +146,48 @@ SSH
 
 No public SSH port is required.
 
+## Using the VPS as a Tailscale exit node
+
+Tailscale also gives my VPS another useful role: it acts as an **exit node**.
+
+When I enable the VPS as the exit node on my laptop or phone, my internet traffic is routed through it.
+
+```text
+Laptop / Phone
+      ↓
+   Tailscale
+      ↓
+Oracle Cloud VPS
+      ↓
+   Internet
+```
+
+That effectively gives me a personal VPN without having to maintain a separate VPN stack.
+
+And because **AdGuard Home** also runs on that VPS and is used as DNS for my Tailscale network, I keep the same DNS filtering while I am connected.
+
+So the complete path looks more like this:
+
+```text
+Laptop / Phone
+      ↓
+   Tailscale
+      ↓
+Oracle Cloud VPS
+   ├── Exit Node
+   └── AdGuard Home
+      ↓
+   Internet
+```
+
+This is especially useful when I am on public Wi-Fi or traveling.
+
+I can route my traffic through infrastructure I control while still keeping the DNS-level blocking rules I use everywhere else.
+
+The nice part is that I do not need another VPN application or another piece of infrastructure for this.
+
+Tailscale handles the private network, the VPS provides the internet exit, and AdGuard Home handles the DNS filtering.
+
 ## The complete flow
 
 For web applications running inside the homelab, the flow looks roughly like this:
@@ -172,10 +214,12 @@ Internet
 Oracle Cloud Free Tier VPS
    ├── Pocket ID
    ├── AdGuard Home
-   └── Memos
+   ├── Memos
+   ├── Caddy
+   └── Tailscale
 ```
 
-And SSH takes another path:
+SSH takes another path:
 
 ```text
 Laptop
@@ -183,6 +227,20 @@ Laptop
 Tailscale
    ↓
 Homelab
+```
+
+And when I want to use the VPS as my VPN:
+
+```text
+Laptop / Phone
+      ↓
+   Tailscale
+      ↓
+Oracle Cloud VPS
+   ├── Exit Node
+   └── AdGuard Home
+      ↓
+   Internet
 ```
 
 ## The way I split responsibilities
@@ -195,7 +253,7 @@ Compute and applications that I can tolerate being temporarily unavailable.
 
 **VPS**
 
-Identity, DNS, notes, and small services that I want available independently of my home infrastructure.
+Identity, DNS, notes, reverse proxying, and networking services that I want available independently of my home infrastructure.
 
 **Cloudflare**
 
@@ -207,7 +265,11 @@ Automation for publishing Docker services through Cloudflare Tunnels using Docke
 
 **Tailscale**
 
-Private access to the infrastructure, especially SSH.
+Private access to the infrastructure, SSH connectivity, and a personal VPN through the VPS acting as an exit node.
+
+**AdGuard Home**
+
+DNS filtering that remains available independently of my homelab and also follows me when I connect through Tailscale.
 
 **Pangolin**
 
@@ -224,6 +286,8 @@ It is still a homelab, and things can break.
 The main lesson for me came from moving and realizing that a homelab can become very unavailable very quickly when it is powered off and sitting inside your luggage.
 
 Since then, I have tried to separate **things I enjoy self-hosting at home** from **things I actually depend on**.
+
+The VPS ended up becoming the small, always-on layer around my homelab: authentication, DNS, notes, private networking, and even a personal VPN when I need one.
 
 The homelab can go down.
 
