@@ -1,0 +1,229 @@
+---
+title: "How I access my homelab without exposing my home network"
+slug: how-i-access-my-homelab-without-exposing-my-home-network
+pubDate: 2026-07-10T18:10:02.000Z
+description: "How I use Cloudflare Tunnels, Dockflare, Pocket ID, Tailscale, and an Oracle Cloud Free Tier VPS to keep my homelab accessible without depending on inbound ports."
+---
+
+I have a Dell OptiPlex 3000 Micro running as my homelab at home.
+
+It hosts several personal services, but accessing a homelab from the internet is not always as simple as forwarding a few ports on the router.
+
+Depending on the ISP, you may be behind CGNAT or other network policies that make inbound connections difficult or simply unavailable.
+
+Because of that, I mostly rely on **Cloudflare Tunnels**.
+
+If I ever need something closer to exposing a service or port directly, **[Pangolin](https://pangolin.net/)** is another option — but that is a topic for another post.
+
+My current setup is mostly built around:
+
+- [Cloudflare Tunnels](https://developers.cloudflare.com/tunnel/)
+- Cloudflare Access
+- [Dockflare](https://github.com/ChrispyBacon-dev/DockFlare)
+- [Pocket ID](https://github.com/pocket-id/pocket-id)
+- [Tailscale](https://tailscale.com/)
+- [Oracle Cloud Free Tier](https://www.oracle.com/cloud/free/)
+
+## Web access with Cloudflare Tunnels
+
+For web applications, I use **Cloudflare Tunnels**.
+
+The homelab establishes an outbound connection to Cloudflare, so I do not need inbound connectivity from my ISP, a public residential IP address, or port forwarding on my router.
+
+This is especially useful because ISP policies vary a lot, and I do not want my remote-access setup to depend on whether a specific connection allows incoming traffic.
+
+On top of that, I use **Dockflare** inside the homelab.
+
+Dockflare makes publishing services through Cloudflare much easier because I can configure them directly using **Docker labels**.
+
+Instead of opening the Cloudflare dashboard every time I deploy a new application, I can define its hostname and tunnel configuration directly in my Docker Compose stack.
+
+Conceptually:
+
+```text
+Docker Compose
+     ↓
+ Docker labels
+     ↓
+   Dockflare
+     ↓
+Cloudflare Tunnel
+```
+
+This fits really well with how I like to manage infrastructure: configuration stays close to the service itself and can be version-controlled together with the rest of the stack.
+
+## Authentication with Cloudflare Access
+
+Some of these services are protected by **Cloudflare Access**.
+
+Before reaching the application, I authenticate through OAuth2/OIDC.
+
+My identity provider is **Pocket ID**.
+
+The important detail is that Pocket ID does **not** run inside my homelab.
+
+## Why some services live on a VPS
+
+This separation came from experience.
+
+When I moved, my homelab was literally turned off and packed inside my luggage.
+
+At that point I realized how frustrating it was to need some of my personal services and discover that they only existed on a machine that was currently unavailable.
+
+That changed how I think about what belongs in a homelab.
+
+Today, I have a small VPS running on the **Oracle Cloud Free Tier**, where I keep the services that I consider part of my basic personal infrastructure:
+
+- Pocket ID
+- AdGuard Home
+- Memos
+- a few other small services that I want available even when my homelab is offline
+
+The goal is not high availability.
+
+It is simply making sure that the services I actually depend on are not tied to a computer sitting at home.
+
+## Authentication should not depend on the homelab
+
+Keeping Pocket ID outside the homelab also avoids a bad dependency loop.
+
+I do not want to depend on my homelab being online in order to authenticate into the services that give me access to my homelab.
+
+```text
+Need homelab
+    ↓
+Need authentication
+    ↓
+Authentication runs on homelab
+    ↓
+Homelab is offline
+```
+
+By keeping Pocket ID on the VPS, my authentication layer remains available independently of what happens at home.
+
+## DNS should survive too
+
+The same idea applies to DNS.
+
+I run **AdGuard Home** on the VPS rather than on the OptiPlex.
+
+If I shut down the homelab, restart Docker, break a network configuration, travel, or simply unplug the machine, my DNS filtering continues working.
+
+For me, DNS is infrastructure rather than just another homelab application.
+
+## Memos lives there too
+
+I also run **[Memos](https://usememos.com/)** on the VPS.
+
+It has become my personal notes and quick-memo system, and it is exactly the kind of service I do not want to lose just because my homelab is unavailable.
+
+That became especially obvious while moving.
+
+If the machine is powered off, in a suitcase, or temporarily unreachable, I still want access to my notes.
+
+So Memos belongs on the more stable side of the setup.
+
+## SSH access with Tailscale
+
+For SSH, I use a different approach.
+
+I do not expose SSH publicly.
+
+Instead, I use **Tailscale** between my devices, my VPS, and the homelab.
+
+That lets me access the OptiPlex directly through my tailnet:
+
+```text
+Laptop
+  ↓
+Tailscale
+  ↓
+OptiPlex
+  ↓
+SSH
+```
+
+No public SSH port is required.
+
+## The complete flow
+
+For web applications running inside the homelab, the flow looks roughly like this:
+
+```text
+Browser
+   ↓
+Cloudflare Access
+   ↓
+Pocket ID
+   ↓
+Cloudflare Tunnel
+   ↓
+Dockflare
+   ↓
+Homelab service
+```
+
+The services that should remain available even when the homelab is offline live separately:
+
+```text
+Internet
+   ↓
+Oracle Cloud Free Tier VPS
+   ├── Pocket ID
+   ├── AdGuard Home
+   └── Memos
+```
+
+And SSH takes another path:
+
+```text
+Laptop
+   ↓
+Tailscale
+   ↓
+Homelab
+```
+
+## The way I split responsibilities
+
+In the end, the architecture became pretty simple.
+
+**Homelab**
+
+Compute and applications that I can tolerate being temporarily unavailable.
+
+**VPS**
+
+Identity, DNS, notes, and small services that I want available independently of my home infrastructure.
+
+**Cloudflare**
+
+The entry point for web applications without depending on inbound connectivity from my ISP.
+
+**Dockflare**
+
+Automation for publishing Docker services through Cloudflare Tunnels using Docker labels.
+
+**Tailscale**
+
+Private access to the infrastructure, especially SSH.
+
+**Pangolin**
+
+An alternative for cases where I need something closer to exposing a service directly.
+
+But Pangolin deserves its own post.
+
+## Final thoughts
+
+This is definitely not high availability.
+
+It is still a homelab, and things can break.
+
+The main lesson for me came from moving and realizing that a homelab can become very unavailable very quickly when it is powered off and sitting inside your luggage.
+
+Since then, I have tried to separate **things I enjoy self-hosting at home** from **things I actually depend on**.
+
+The homelab can go down.
+
+My basic infrastructure should not.

@@ -2,6 +2,8 @@
 import { SITE, SOCIALS } from "@/consts";
 
 const host = new URL(SITE.url).host;
+
+const isExternal = (href: string) => /^https?:\/\//.test(href);
 ---
 
 <footer class="mt-16 border-t border-border/60">
@@ -14,18 +16,22 @@ const host = new URL(SITE.url).host;
 
         <nav aria-label="Links">
             <ul class="mt-4 flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
-                {SOCIALS.map((item) => (
-                    <li>
-                        <a
-                            href={item.href}
-                            target="_blank"
-                            rel="noreferrer"
-                            class="inline-flex items-center rounded-sm text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
-                        >
-                            {item.label}/
-                        </a>
-                    </li>
-                ))}
+                {SOCIALS.map((item) => {
+                    const external = isExternal(item.href);
+
+                    return (
+                        <li>
+                            <a
+                                href={item.href}
+                                target={external ? "_blank" : undefined}
+                                rel={external ? "noreferrer" : undefined}
+                                class="rounded-sm text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+                            >
+                                {item.label}/
+                            </a>
+                        </li>
+                    );
+                })}
             </ul>
         </nav>
     </div>

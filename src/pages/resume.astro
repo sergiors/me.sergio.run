@@ -12,7 +12,6 @@ import {
 } from "@/data/resume";
 import Layout from "@/layouts/layout.astro";
 import { cn } from "@/lib/utils";
-import { ArrowUpRight } from "lucide-react";
 
 /** Bullet colour for each supported project language. */
 const languageDot: Record<ProjectLanguage, string> = {
@@ -178,13 +177,9 @@ const languageDot: Record<ProjectLanguage, string> = {
                                         href={project.href}
                                         target="_blank"
                                         rel="noreferrer"
-                                        class="group inline-flex items-center gap-1 underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                                        class="underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
                                     >
                                         {project.name}
-                                        <ArrowUpRight
-                                            aria-hidden="true"
-                                            className="size-3.5 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                                        />
                                     </a>
                                 </h3>
                                 <span class="font-mono text-xs text-muted-foreground">

@@ -132,6 +132,7 @@ export const experience: Experience[] = [
   {
     role: "Web Developer",
     company: "RIAWorks",
+    companyHref: "https://riaworks.com.br/",
     period: "January 2010 – May 2012",
     items: [
       "Web development in PHP with CodeIgniter.",

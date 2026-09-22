@@ -145,6 +145,24 @@
         @apply outline-2 outline-offset-2 outline-ring;
     }
 
+    /* Mark external links with a decorative arrow from CSS rather than an
+       inline icon, so every absolute or protocol-relative link is flagged the
+       same way — including links written in Markdown. `inline-block` keeps the
+       parent underline from crossing the glyph. The empty alternative text
+       (second `content`, ignored by older browsers that lack the syntax) marks
+       the glyph as decorative for screen readers. */
+    a[href^="https://"]::after,
+    a[href^="http://"]::after,
+    a[href^="//"]::after {
+        content: "↗";
+        content: "↗" / "";
+        display: inline-block;
+        margin-inline-start: 0.25em;
+        font-size: 0.85em;
+        line-height: 1;
+        text-decoration: none;
+    }
+
     @media (prefers-reduced-motion: reduce) {
         html {
             scroll-behavior: auto;

@@ -141,10 +141,24 @@ const serviceGroups: ServiceGroup[] = [
     },
 ];
 
-const environment = [
+type EnvironmentRow = {
+    /** Spec label shown after the `$` prompt. */
+    term: string;
+    /** Value for the spec. */
+    value: string;
+    /** Optional honest caveat rendered under the value. */
+    note?: string;
+};
+
+const environment: EnvironmentRow[] = [
     { term: "host", value: "Dell OptiPlex 3000" },
     { term: "cpu", value: "12th Gen Intel Core i5-12500" },
     { term: "memory", value: "32 GB" },
+    {
+        term: "storage",
+        value: "HDD · 6 GB of files",
+        note: "A single disk with no mirroring or parity — not a redundant NAS yet.",
+    },
     { term: "hypervisor", value: "Proxmox" },
     { term: "runtime", value: "Docker" },
     { term: "platform", value: "Linux" },
@@ -164,20 +178,12 @@ type Photo = {
     height: number;
 };
 
-type PhotoOrientation = "portrait" | "landscape";
-
 /**
- * Photos are shown in a fixed 3-up strip, so the frame has to follow the
- * intrinsic orientation of each shot instead of cropping them all to one
- * ratio. Derived from width/height so it cannot drift from the files.
+ * All three shots share one frame so the strip reads as an even set: a fixed
+ * 4:3 crop with `object-cover`. The intrinsic width/height are still passed to
+ * the `<img>` so the browser reserves space before the image loads.
  */
-const orientationOf = (photo: Photo): PhotoOrientation =>
-    photo.height > photo.width ? "portrait" : "landscape";
-
-const ASPECT_CLASS: Record<PhotoOrientation, string> = {
-    portrait: "aspect-[3/4]",
-    landscape: "aspect-[4/3]",
-};
+const PHOTO_FRAME_CLASS = "aspect-[4/3]";
 
 // Supporting shots of the host itself, kept small so they read as context
 // next to the environment spec sheet rather than as a photo gallery.
@@ -302,7 +308,14 @@ const principles = [
                                 </span>{" "}
                                 {row.term}
                             </dt>
-                            <dd class="min-w-0 text-foreground">{row.value}</dd>
+                            <dd class="min-w-0 text-foreground">
+                                {row.value}
+                                {row.note && (
+                                    <span class="measure mt-0.5 block font-sans text-xs/relaxed text-muted-foreground">
+                                        {row.note}
+                                    </span>
+                                )}
+                            </dd>
                         </div>
                     ))}
                 </dl>
@@ -317,31 +330,27 @@ const principles = [
                 </p>
 
                 <ul class="grid grid-cols-3 gap-2 sm:gap-3">
-                    {photos.map((photo) => {
-                        const orientation = orientationOf(photo);
-                        return (
-                            <li>
-                                <figure class="space-y-1.5">
-                                    <img
-                                        src={photo.src}
-                                        alt={photo.alt}
-                                        width={photo.width}
-                                        height={photo.height}
-                                        loading="lazy"
-                                        decoding="async"
-                                        data-orientation={orientation}
-                                        class:list={[
-                                            "w-full rounded-lg border border-border/70 object-cover",
-                                            ASPECT_CLASS[orientation],
-                                        ]}
-                                    />
-                                    <figcaption class="font-mono text-xs text-muted-foreground">
-                                        {photo.caption}
-                                    </figcaption>
-                                </figure>
-                            </li>
-                        );
-                    })}
+                    {photos.map((photo) => (
+                        <li>
+                            <figure class="space-y-1.5">
+                                <img
+                                    src={photo.src}
+                                    alt={photo.alt}
+                                    width={photo.width}
+                                    height={photo.height}
+                                    loading="lazy"
+                                    decoding="async"
+                                    class:list={[
+                                        "w-full rounded-lg border border-border/70 object-cover",
+                                        PHOTO_FRAME_CLASS,
+                                    ]}
+                                />
+                                <figcaption class="font-mono text-xs text-muted-foreground">
+                                    {photo.caption}
+                                </figcaption>
+                            </figure>
+                        </li>
+                    ))}
                 </ul>
             </div>
         </section>
