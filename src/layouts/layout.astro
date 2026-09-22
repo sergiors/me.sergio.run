@@ -5,71 +5,81 @@ import { SITE } from "@/consts";
 import "../styles/global.css";
 
 type Props = {
-  /** Page title used for metadata and Open Graph tags. */
-  title?: string;
-  /** Meta description; falls back to the site-wide default. */
-  description?: string;
+    /** Page title used for metadata and Open Graph tags. */
+    title?: string;
+    /** Meta description; falls back to the site-wide default. */
+    description?: string;
 };
 
 const { title = SITE.title, description = SITE.description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, SITE.url);
+const rssHref = new URL("/rss.xml", SITE.url).href;
 ---
 
 <script is:inline>
-  const getThemePreference = () => {
-    if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
-      return localStorage.getItem("theme");
-    }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-  };
-  const isDark = getThemePreference() === "dark";
-  document.documentElement.classList[isDark ? "add" : "remove"]("dark");
+    const getThemePreference = () => {
+        if (
+            typeof localStorage !== "undefined" &&
+            localStorage.getItem("theme")
+        ) {
+            return localStorage.getItem("theme");
+        }
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+    };
+    const isDark = getThemePreference() === "dark";
+    document.documentElement.classList[isDark ? "add" : "remove"]("dark");
 
-  if (typeof localStorage !== "undefined") {
-    const observer = new MutationObserver(() => {
-      const isDark = document.documentElement.classList.contains("dark");
-      localStorage.setItem("theme", isDark ? "dark" : "light");
-    });
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-  }
+    if (typeof localStorage !== "undefined") {
+        const observer = new MutationObserver(() => {
+            const isDark = document.documentElement.classList.contains("dark");
+            localStorage.setItem("theme", isDark ? "dark" : "light");
+        });
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+    }
 </script>
 
 <html lang={SITE.locale}>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
-    <link rel="canonical" href={canonical.href} />
-    <meta name="description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content={SITE.name} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical.href} />
-    <meta name="twitter:card" content="summary" />
-  </head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+        <link rel="canonical" href={canonical.href} />
+        <link
+            rel="alternate"
+            type="application/rss+xml"
+            title={SITE.title}
+            href={rssHref}
+        />
+        <meta name="description" content={description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content={SITE.name} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonical.href} />
+        <meta name="twitter:card" content="summary" />
+    </head>
 
-  <body class="grid-backdrop flex min-h-dvh flex-col">
-    <a
-      href="#main"
-      class="sr-only rounded-md bg-background px-4 py-2 font-mono text-sm focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50"
-    >
-      Skip to content
-    </a>
+    <body class="grid-backdrop flex min-h-dvh flex-col">
+        <a
+            href="#main"
+            class="sr-only rounded-md bg-background px-4 py-2 font-mono text-sm focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50"
+        >
+            Skip to content
+        </a>
 
-    <Header />
+        <Header />
 
-    <main id="main" class="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
-      <slot />
-    </main>
+        <main id="main" class="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
+            <slot />
+        </main>
 
-    <Footer />
-  </body>
+        <Footer />
+    </body>
 </html>

@@ -8,6 +8,9 @@ import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
+  // Canonical origin; also used by `@astrojs/rss` to build absolute URLs.
+  site: "https://me.sergio.run",
+
   prefetch: {
     defaultStrategy: "viewport",
     prefetchAll: true,
