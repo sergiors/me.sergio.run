@@ -12,8 +12,8 @@ export default defineConfig({
   site: "https://me.sergio.run",
 
   prefetch: {
-    defaultStrategy: "viewport",
-    prefetchAll: true,
+    defaultStrategy: "hover",
+    prefetchAll: false,
   },
 
   // Astro 7 changed the default to "jsx", which strips the whitespace around
