@@ -1,4 +1,5 @@
 ---
+import { Font } from "astro:assets";
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
 import { SITE } from "@/consts";
@@ -64,6 +65,7 @@ const rssHref = new URL("/rss.xml", SITE.url).href;
         <meta property="og:description" content={description} />
         <meta property="og:url" content={canonical.href} />
         <meta name="twitter:card" content="summary" />
+        <Font cssVariable="--font-inter" preload />
     </head>
 
     <body class="grid-backdrop flex min-h-dvh flex-col">
