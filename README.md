@@ -18,7 +18,8 @@ Built with [Astro](https://astro.build) and deployed to [Cloudflare Workers](htt
 ```text
 /
 ├── public/
-│   └── favicon.svg
+│   ├── favicon.svg
+│   └── images/homelab/       # optimised photos of the homelab host
 ├── src/
 │   ├── components/
 │   │   ├── Header.astro     # sticky nav with active-link state

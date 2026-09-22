@@ -151,6 +151,60 @@ const environment = [
     { term: "focus", value: "learning · operations · documentation" },
 ];
 
+type Photo = {
+    /** Public path to the optimised photo. */
+    src: string;
+    /** Alternative text describing what the photo shows. */
+    alt: string;
+    /** Short monospace caption shown under the thumbnail. */
+    caption: string;
+    /** Intrinsic width, kept in sync with the file in `public/`. */
+    width: number;
+    /** Intrinsic height, kept in sync with the file in `public/`. */
+    height: number;
+};
+
+type PhotoOrientation = "portrait" | "landscape";
+
+/**
+ * Photos are shown in a fixed 3-up strip, so the frame has to follow the
+ * intrinsic orientation of each shot instead of cropping them all to one
+ * ratio. Derived from width/height so it cannot drift from the files.
+ */
+const orientationOf = (photo: Photo): PhotoOrientation =>
+    photo.height > photo.width ? "portrait" : "landscape";
+
+const ASPECT_CLASS: Record<PhotoOrientation, string> = {
+    portrait: "aspect-[3/4]",
+    landscape: "aspect-[4/3]",
+};
+
+// Supporting shots of the host itself, kept small so they read as context
+// next to the environment spec sheet rather than as a photo gallery.
+const photos: Photo[] = [
+    {
+        src: "/images/homelab/optiplex-3000-front.jpg",
+        alt: "Front of the Dell OptiPlex 3000 standing beside its dock, showing the power button, two blue USB ports and the ventilation grille.",
+        caption: "front — ports & dock",
+        width: 720,
+        height: 960,
+    },
+    {
+        src: "/images/homelab/optiplex-3000-side.jpg",
+        alt: "Side of the Dell OptiPlex 3000 showing the large cooling fan attached to the vented case.",
+        caption: "side — fan & vents",
+        width: 960,
+        height: 720,
+    },
+    {
+        src: "/images/homelab/optiplex-3000-behind.jpg",
+        alt: "Power leads and cables routed behind the Dell OptiPlex 3000 and its dock.",
+        caption: "behind — cabling",
+        width: 720,
+        height: 960,
+    },
+];
+
 const principles = [
     {
         title: "hardware at home",
@@ -200,7 +254,7 @@ const principles = [
             </div>
 
             <p class="measure text-base/relaxed text-muted-foreground">
-                A self-hosted setup I run at home on a Dell OptiPlex 3000.
+                A self-hosted setup I run at home on a Dell OptiPlex 3000 Micro.
                 Proxmox hosts the virtual machines and containers, Docker runs
                 the services, and Cloudflare Tunnels expose the few that I need
                 to reach from outside the network. I use it to learn — wiring
@@ -252,6 +306,43 @@ const principles = [
                         </div>
                     ))}
                 </dl>
+            </div>
+
+            <div class="space-y-2">
+                <p class="prompt">
+                    <span class="prompt-mark" aria-hidden="true">
+                        #
+                    </span>
+                    the host itself
+                </p>
+
+                <ul class="grid grid-cols-3 gap-2 sm:gap-3">
+                    {photos.map((photo) => {
+                        const orientation = orientationOf(photo);
+                        return (
+                            <li>
+                                <figure class="space-y-1.5">
+                                    <img
+                                        src={photo.src}
+                                        alt={photo.alt}
+                                        width={photo.width}
+                                        height={photo.height}
+                                        loading="lazy"
+                                        decoding="async"
+                                        data-orientation={orientation}
+                                        class:list={[
+                                            "w-full rounded-lg border border-border/70 object-cover",
+                                            ASPECT_CLASS[orientation],
+                                        ]}
+                                    />
+                                    <figcaption class="font-mono text-xs text-muted-foreground">
+                                        {photo.caption}
+                                    </figcaption>
+                                </figure>
+                            </li>
+                        );
+                    })}
+                </ul>
             </div>
         </section>
 
