@@ -153,11 +153,16 @@
   a[href^="https://"]::after,
   a[href^="http://"]::after,
   a[href^="//"]::after {
-    content: "↗" / "";
+    content: "\2197\FE0E";
     display: inline-block;
-    margin-inline-start: 0.25em;
-    font-size: 0.85em;
+
+    margin-inline-start: 0.2em;
+
+    font-size: 0.65em;
     line-height: 1;
+    vertical-align: 0.25em;
+
+    opacity: 0.65;
     text-decoration: none;
   }
 
