@@ -7,14 +7,18 @@ import optiplex3000Side from "@/assets/homelab/optiplex-3000-side.jpg";
 import InProgressNote from "@/components/InProgressNote.astro";
 import Layout from "@/layouts/layout.astro";
 import {
+    Activity,
     Cloud,
     Container,
     Database,
     Download,
     Film,
+    FlaskConical,
     HardDrive,
     Images,
+    LayoutDashboard,
     Layers,
+    Route,
     Server,
     Wallet,
     Zap,
@@ -29,6 +33,8 @@ type Service = {
     /** Short category chip shown under the purpose. */
     category: string;
     icon: LucideIcon;
+    /** Upstream project repository. When present, the name links to it. */
+    repo?: string;
 };
 
 type ServiceGroup = {
@@ -75,6 +81,7 @@ const serviceGroups: ServiceGroup[] = [
                     "Self-hosted photo and video backup, with browsing from any device.",
                 category: "photos",
                 icon: Images,
+                repo: "https://github.com/immich-app/immich",
             },
             {
                 name: "Jellyfin",
@@ -101,6 +108,14 @@ const serviceGroups: ServiceGroup[] = [
                 purpose: "Shared expense tracking for households and groups.",
                 category: "expenses",
                 icon: Wallet,
+                repo: "https://github.com/spiral-project/ihatemoney",
+            },
+            {
+                name: "Jupyter",
+                purpose:
+                    "Notebooks for running experiments and working through data on the lab.",
+                category: "notebooks",
+                icon: FlaskConical,
             },
         ],
     },
@@ -131,6 +146,37 @@ const serviceGroups: ServiceGroup[] = [
         ],
     },
     {
+        id: "monitoring",
+        label: "monitoring",
+        description:
+            "How I see whether the lab is up and how hard it is working.",
+        items: [
+            {
+                name: "Beszel",
+                purpose:
+                    "Lightweight server and container monitoring, with resource history for every service.",
+                category: "monitoring",
+                icon: Activity,
+                repo: "https://github.com/henrygd/beszel",
+            },
+        ],
+    },
+    {
+        id: "tooling",
+        label: "tooling",
+        description: "Utilities I reach for when I run or change the lab.",
+        items: [
+            {
+                name: "Dockhand",
+                purpose:
+                    "Web UI for managing the Docker Compose stacks behind the lab.",
+                category: "containers",
+                icon: LayoutDashboard,
+                repo: "https://github.com/Finsys/dockhand",
+            },
+        ],
+    },
+    {
         id: "networking",
         label: "networking",
         description: "How selected services are reached from outside the lab.",
@@ -141,6 +187,14 @@ const serviceGroups: ServiceGroup[] = [
                     "Publishes selected services over the internet without opening inbound ports.",
                 category: "access",
                 icon: Cloud,
+            },
+            {
+                name: "DockFlare",
+                purpose:
+                    "Reads Docker container labels and keeps the tunnel ingress and Access rules in sync.",
+                category: "ingress",
+                icon: Route,
+                repo: "https://github.com/ChrispyBacon-dev/DockFlare",
             },
         ],
     },
@@ -396,7 +450,18 @@ const principles = [
                                                 <Icon className="size-5" />
                                             </span>
                                             <h4 class="font-semibold tracking-tight">
-                                                {service.name}
+                                                {service.repo ? (
+                                                    <a
+                                                        href={service.repo}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        class="underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                                                    >
+                                                        {service.name}
+                                                    </a>
+                                                ) : (
+                                                    service.name
+                                                )}
                                             </h4>
                                         </header>
 
