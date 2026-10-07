@@ -39,7 +39,7 @@ AWS has good solutions for these problems.
 
 What interests me is how quickly a simple function can turn into a collection of services needed to provide things a traditional application process gives you by default.
 
-In some cases, a simple FastAPI or Express.js application running as a regular service could be a better fit, while also letting you take fuller advantage of the ecosystem around those frameworks.
+In some cases, a FastAPI or Express.js application running as a regular service may already be a better fit, while also letting you take fuller advantage of the ecosystem around those frameworks.
 
 The function stays simple.
 
@@ -62,5 +62,37 @@ Sometimes a function is the right abstraction.
 Sometimes FastAPI or Express.js already gives you everything you need.
 
 What I wanted was a way to use both without giving up the simplicity that made the serverless model attractive in the first place.
+
+## That Became Relay
+
+That idea eventually became Relay.
+
+[Relay](https://github.com/sergiors/relay) is my attempt to keep the developer experience I like from serverless and event-driven platforms, while running on infrastructure I control.
+
+The goal isn't to reproduce AWS service by service. It's to keep the useful abstractions.
+
+I want to be able to write a function, subscribe it to an event, add a schedule, or run a regular service without having to think about build files, containers, workers, retries, or all the infrastructure required to connect those pieces together.
+
+Something closer to:
+
+```yaml
+runtime: python3.14
+
+events:
+  - handler: events.on_user_created.handler
+    pattern:
+      recordType: [INSERT]
+      tableName: [users]
+
+services:
+  - name: api
+    entrypoint: app/entrypoint.py
+    port: 80
+    host: api.example.com
+```
+
+At the same time, I still want to be able to run a FastAPI or Express.js application when a regular service is the better fit.
+
+Relay takes care of the infrastructure behind that model, while keeping the application portable and self-hosted.
 
 <InProgressNote />
