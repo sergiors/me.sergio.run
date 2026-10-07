@@ -2,7 +2,7 @@
 title: "Building Event-Driven Systems Without the Cloud Lock-In"
 slug: building-event-driven-systems-without-the-cloud-lock-in
 pubDate: 2026-09-10T19:41:46.095963
-description: "Why I like the event-driven model, what the AWS cost and lock-in trade-offs look like, and the question that started this series."
+description: "Why I like the event-driven model, where some of the trade-offs start to appear, and the question that started this series."
 ---
 
 import InProgressNote from "@/components/InProgressNote.astro";
@@ -11,20 +11,56 @@ I've been working with AWS infrastructure for quite some time, especially with D
 
 I've always liked how practical this approach is. You can connect services through events, keep components decoupled, and go from an idea to something scalable with very little infrastructure to manage.
 
-But over time, a few things started to bother me.
+For event-driven workloads, Lambda fits particularly well into this model. You write a small handler, connect it to an event source, and let AWS take care of running and scaling it.
 
-DynamoDB Streams are consumed through polling, and as the architecture grows, you also start thinking about stream reads, EventBridge requests, Lambda invocations, and the cost model behind all those moving parts.
+That simplicity is one of the things I like most about the AWS ecosystem.
 
-And then there's the bigger issue: vendor lock-in.
+But as I started using this model more, some of the trade-offs became harder to ignore.
 
-I really like this way of building systems, both professionally and for personal projects. But using the same approach usually means committing the application to AWS.
+Even a relatively small application can generate a surprising amount of event traffic. With usage-based services, cost tends to follow the number of events and the number of steps they pass through rather than the size of the application itself.
 
-For personal projects in particular, I wanted the same kind of speed and simplicity I get from the AWS stack — without having to maintain build files, deployment boilerplate, or a bunch of infrastructure just to run a small event-driven service.
+A single change might flow through DynamoDB Streams, EventBridge, and one or more Lambda functions. Each individual service can be inexpensive, but as event volume and fan-out grow, so does the number of operations involved.
 
-And professionally, having that same programming model without being tied to a specific cloud provider is also very appealing.
+There is also the bigger issue of vendor lock-in. The more of these services you combine, the more the architecture itself becomes tied to AWS.
 
-That made me start wondering:
+And Lambda, while a great fit for event processing, starts to feel different when you use it for workloads that are naturally long-running services.
 
-What if I could keep the event-driven programming model I like, without being tied to the platform behind it?
+APIs are a good example.
+
+## Where Lambda Starts to Feel Less Simple for APIs
+
+Lambda works really well for APIs, especially when the workload is small, stateless, and bursty.
+
+But as the API grows, some of that simplicity starts to disappear.
+
+Cold starts may require Provisioned Concurrency or SnapStart. More advanced HTTP needs often bring API Gateway into the architecture. Relational databases can require RDS Proxy to reduce connection pressure. WebSockets, long-running requests, or steady workloads may push you toward other AWS services or a different compute model entirely.
+
+AWS has good solutions for these problems.
+
+What interests me is how quickly a simple function can turn into a collection of services needed to provide things a traditional application process gives you by default.
+
+In some cases, a simple FastAPI or Express.js application running as a regular service could be a better fit, while also letting you take fuller advantage of the ecosystem around those frameworks.
+
+The function stays simple.
+
+The system around it doesn't always do the same.
+
+## What I Wanted Instead
+
+And that is what eventually made me start wondering:
+
+What if I could keep the parts of this model that I like — small functions, events, decoupled services, automatic retries, and a simple developer experience — without tying the application to a specific cloud provider?
+
+For personal projects, I wanted the same kind of speed and simplicity I get from AWS without having to maintain build files, deployment boilerplate, or a collection of infrastructure just to run a few functions and services.
+
+Professionally, the same idea is appealing for a different reason: being able to use an event-driven programming model without making the architecture itself dependent on a specific cloud platform.
+
+And at the same time, I didn't want everything to be a function.
+
+Sometimes a function is the right abstraction.
+
+Sometimes FastAPI or Express.js already gives you everything you need.
+
+What I wanted was a way to use both without giving up the simplicity that made the serverless model attractive in the first place.
 
 <InProgressNote />
