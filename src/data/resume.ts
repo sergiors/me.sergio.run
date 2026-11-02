@@ -26,7 +26,7 @@ export type Experience = {
 };
 
 /** Languages that have a dedicated bullet colour on the projects list. */
-export type ProjectLanguage = "Go" | "Python";
+export type ProjectLanguage = "Go" | "Python" | "TypeScript";
 
 export type Project = {
   name: string;
@@ -151,12 +151,12 @@ export const projects: Project[] = [
       "An event-driven function runner backed by Redis Streams, with declarative event matching, isolated container execution, consumer-group delivery, dynamic function reconciliation and cluster-safe cron scheduling.",
   },
   {
-    name: "Conduit",
-    href: "https://github.com/sergiors/conduit",
+    name: "scorm-cli",
+    href: "https://github.com/sergiors/scorm-cli",
     period: "2026 – Present",
-    language: "Go",
+    language: "TypeScript",
     description:
-      "A CDC platform on top of MongoDB Change Streams, providing DynamoDB-like streaming semantics with resume-token recovery, retries, dead-letter queues, TTL support, configurable sinks and runtime configuration through a control-plane/data-plane architecture.",
+      "A CLI-based SCORM authoring tool for building interactive e-learning courses from MDX, featuring customizable layouts, assessments, SCORM 1.2/2004 packaging, and live-reloading previews.",
   },
   {
     name: "Paperforge",
